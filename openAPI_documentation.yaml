@@ -323,14 +323,14 @@ paths:
         '500':
           description: There was an error updating the user
     delete:
-      summary: Delete a course specified by the courseId
+      summary: Delete a user specified by the userId
       tags: 
       - User
       security:
       - BearerAuth: []
       responses:
         '200':
-          description: Delete course is successful
+          description: Delete user is successful
           content:
             application/json:
               schema:
@@ -338,7 +338,7 @@ paths:
         '404':
           description: User not found
         '500':
-          description: There was an error deleting the course
+          description: There was an error deleting the user
                 
   /signup:
     post:
