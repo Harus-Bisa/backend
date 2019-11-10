@@ -1,0 +1,469 @@
+openapi: "3.0.0"
+info:
+  title: Harus Bisa API
+  description: Back end API for Harus Bisa
+  version: 0.0.1
+
+servers:
+  - url: https://api.harusbisa.net
+    description: Production server
+  
+components:
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+  schemas:
+    User:
+      properties:
+        userId:
+          type: string
+          example: '5db6093a7f75df3ce6c12095'
+        firstName:
+          type: string
+          example: 'Wilson'
+        lastName:
+          type: string
+          example: 'Burnawan'
+        email:
+          type: string
+          format: email
+          example: 'wilson.burnawan@gmail.com'
+        school:
+          type: string
+          example: 'University of Illinois at Urbana-Champaign'
+        role:
+          type: string
+          example: 'faculty'
+          
+    Course:
+      properties:
+        courseId:
+          type: string
+          example: '5db492c349a67b33b8d0a2a2'
+        courseName:
+          type: string
+          example: 'Calculus I'
+        courseDescription:
+          type: string
+          example: 'The basic of calculus (derivatives).'
+        startTerm:
+          type: string
+          example: 'August 2019'
+        endTerm:
+          type: string
+          example: 'December 2019'
+        numberOfLectures:
+          type: integer
+          example: 5
+          minimum: 0
+        numberOfStudents:
+          type: integer
+          minimum: 0
+          example: 21
+        instructors:
+          type: array
+          items:
+            type: string
+          example: ['John Doe', 'Bryan Smith']
+        joinCode:
+          type: string
+          minimum: 000000
+          maximum: 999999
+          example: '123654'
+          
+    Token:
+      properties:
+        token:
+          type: string
+          example: '300b524e1b87374b56af68cd6b54aef7a65fda38'
+          
+paths:
+  /courses:
+    get:
+      summary: Returns an array of courses
+      tags: 
+      - Course
+      security:
+       - BearerAuth: []
+      responses:
+        '200':
+          description: Get courses is successful
+          content:
+            application/json:
+              schema:
+                type: array             
+                items:
+                  $ref: '#/components/schemas/Course'
+        '500':
+          description: There was an error getting the courses
+    post:
+      summary: Create a new course
+      tags: 
+      - Course
+      security:
+      - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+             type: object
+             required:
+              - courseName
+              - startTerm
+              - endTerm
+             properties:
+              courseName:
+                type: string
+                example: 'Calculus I'
+              courseDescription:
+                type: string
+                example: 'The basic of calculus (derivatives).'
+              startTerm:
+                type: string
+                example: 'August 2019'
+              endTerm:
+                type: string
+                example: 'December 2019'
+      responses:
+        '201':
+          description: Course was created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Course'
+        '500':
+          description: There was an error creating the course
+          
+  /courses/{courseId}:
+    parameters: 
+        - name: courseId
+          in: path
+          required: true
+          description: The id of the course
+          schema:
+            type: string
+            example: '5dbcb4a6051c1351ea5735ee'
+    get:
+      summary: Return a course specified by the courseId
+      tags: 
+      - Course
+      security:
+       - BearerAuth: []
+      responses:
+        '200':
+          description: Get course is successful
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Course'
+        '404':
+          description: Course is not in the user's course list
+        '500':
+          description: There was an error getting the course
+    put:
+      summary: Update a course specified by the courseId
+      tags: 
+      - Course
+      security:
+      - BearerAuth: []
+      requestBody:
+        description: Field(s) to be changed
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                courseName:
+                  type: string
+                  example: 'Calculus I'
+                courseDescription:
+                  type: string
+                  example: 'The basic of calculus (derivatives).'
+                startTerm:
+                  type: string
+                  example: 'August 2019'
+                endTerm:
+                  type: string
+                  example: 'December 2019'
+      responses:
+        '200':
+          description: Update course is successful
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Course'
+        '404':
+          description: Course not found
+        '500':
+          description: There was an error updating the course
+    delete:
+      summary: Delete a course specified by the courseId
+      tags: 
+      - Course
+      security:
+      - BearerAuth: []
+      responses:
+        '200':
+          description: Delete course is successful
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Course'
+        '404':
+          description: Course not found
+        '500':
+          description: There was an error deleting the course
+  
+  /courses/{joinCode}:
+    parameters: 
+      - name: joinCode
+        in: path
+        required: true
+        description: The joinCode of the course
+        schema:
+          type: string
+          example: '123654'
+      - name: joinCode
+        in: query
+        required: true
+        description: Flag to search by joinCode
+        schema:
+          type: boolean
+          example: true
+    get:
+      summary: Return a course specified by the joinCode
+      tags:
+      - Course
+      security: 
+      - BearerAuth: []
+      responses:
+        '200':
+          description: Get course is successful
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Course'
+        '404':
+          description: Course not found
+        '500':
+          description: There was an error getting the course
+        
+  /users/{userId}:
+    parameters:
+    - name: userId
+      in: path
+      required: true
+      description: The id of the user
+      schema:
+        type: string
+        example: '5db6093a7f75df3ce6c12095'
+    get:
+      summary: Return a user specified by the userId
+      tags:
+      - User
+      security: 
+      - BearerAuth: []
+      responses:
+        '200':
+          description: Get user is successful
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+        '404':
+          description: User not found
+        '500':
+          description: There was an error getting the user
+    put:
+      summary: Update a user specified by the userId
+      tags: 
+      - User
+      security:
+      - BearerAuth: []
+      requestBody:
+        description: Field(s) to be changed
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                firstName:
+                  type: string
+                  example: 'Wilson'
+                lastName:
+                  type: string
+                  example: 'Burnawan'
+                email:
+                  type: string
+                  format: email
+                  example: 'wilson.burnawan@gmail.com'
+                school:
+                  type: string
+                  example: 'University of Illinois at Urbana-Champaign'
+                oldPassword:
+                  type: string
+                  example: '123abc'
+                newPassword:
+                  type: string
+                  example: '123abc'
+      responses:
+        '200':
+          description: Update user is successful
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+        '404':
+          description: User not found
+        '500':
+          description: There was an error updating the user
+    delete:
+      summary: Delete a course specified by the courseId
+      tags: 
+      - User
+      security:
+      - BearerAuth: []
+      responses:
+        '200':
+          description: Delete course is successful
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+        '404':
+          description: User not found
+        '500':
+          description: There was an error deleting the course
+                
+  /signup:
+    post:
+      summary: Create a new user
+      tags: 
+      - Authentication
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+             type: object
+             required:
+              - firstName
+              - lastName
+              - email
+              - school
+              - role
+              - password
+              - retypePassword
+             properties:
+              firstName:
+                type: string
+                example: 'Wilson'
+              lastName:
+                type: string
+                example: 'Burnawan'
+              email:
+                type: string
+                format: email
+                example: 'wilson.burnawan@gmail.com'
+              school:
+                type: string
+                example: 'University of Illinois at Urbana-Champaign'
+              role:
+                type: string
+                example: 'faculty'
+              password:
+                type: string
+                example: '123abc'
+              retypePassword:
+                type: string
+                example: '123abc'
+      responses:
+        '201':
+          description: User was created successfully
+        '500':
+          description: There was an error creating the user
+  
+  /login:
+    post:
+      summary: Login to get authorization token
+      tags:
+      - Authentication
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: 
+              - email
+              - password
+              properties:
+                email:
+                  type: string
+                  format: email
+                  example: 'wilson.burnawan@gmail.com'
+                password:
+                  type: string
+                  example: '123abc'
+      responses:
+        '200':
+          description: Login was successful
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Token'
+        '401':
+          description: Please provide correct email and password
+        '500':
+          description: There was an error logging in
+          
+  /verify:
+    post:
+      summary: Verify account using token provided through email
+      parameters:
+      - name: token
+        in: query
+        required: true
+        description: Token to verify account
+        schema:
+          type: string
+          example: '300b524e1b87374b56af68cd6b54aef7a65fda38'
+      tags: 
+      - Authentication
+      responses:
+        '200':
+          description: Account has been verified
+        '401':
+          description: Token is not valid
+        '500':
+          description: There was an error verifying the account
+          
+  /resendToken:
+    post:
+      summary: resend token to provided email
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: 
+              - email
+              properties:
+                email:
+                  type: string
+                  format: email
+                  example: 'wilson.burnawan@gmail.com'
+      tags: 
+      - Authentication
+      responses:
+        '204':
+          description: Email has been sent
+        '500':
+          description: There was an error sending the email
+      
