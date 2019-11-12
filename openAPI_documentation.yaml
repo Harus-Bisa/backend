@@ -38,7 +38,7 @@ components:
           type: string
           example: 'faculty'
           
-    Course:
+    CourseFaculty:
       properties:
         courseId:
           type: string
@@ -73,273 +73,163 @@ components:
           minimum: 000000
           maximum: 999999
           example: '123654'
+    
+    CourseStudent:
+      properties:
+        courseId:
+          type: string
+          example: '5db492c349a67b33b8d0a2a2'
+        courseName:
+          type: string
+          example: 'Calculus I'
+        courseDescription:
+          type: string
+          example: 'The basic of calculus (derivatives).'
+        startTerm:
+          type: string
+          example: 'August 2019'
+        endTerm:
+          type: string
+          example: 'December 2019'
+        numberOfLectures:
+          type: integer
+          example: 5
+          minimum: 0
+        instructors:
+          type: array
+          items:
+            type: string
+          example: ['John Doe', 'Bryan Smith']
+        joinCode:
+          type: string
+          minimum: 000000
+          maximum: 999999
+          example: '123654'
           
-    Token:
+    LectureFaculty:
+      properties:
+        lectureId:
+          type: string
+          example: '5db6093a7f75df3ce6c12095'
+        date:
+          type: string
+          example: '15/02/2019'
+        description:
+          type: string
+          example: 'Syllabus day'
+        attendanceNumber:
+          type: integer
+          minimum: 0
+          example: 16
+        live:
+          type: boolean
+          example: false
+        hasLived:
+          type: boolean
+          example: false
+        participatonRewardPercentage:
+          type: integer
+          minimum: 0
+          maximum: 100
+          example: 50
+          
+    LectureStudent:
+      properties:
+        lectureId:
+          type: string
+          example: '5db6093a7f75df3ce6c12095'
+        date:
+          type: string
+          example: '15/02/2019'
+        description:
+          type: string
+          example: 'Syllabus day'
+        attendance:
+          type: boolean
+          example: true
+        participatonRewardPercentage:
+          type: integer
+          minimum: 0
+          maximum: 100
+          example: 50
+        grade:
+          type: integer
+          minimum: 0
+          maximum: 100
+          example: 90
+          
+    QuizFaculty:
+      properties:
+        question:
+          type: string
+          example: '1 + 1 = ?'
+        answerOptions:
+          type: array
+          items:
+            type: string
+          example: ['4', '2', '0']
+        correctAnswerIndex:
+          type: integer
+          minimum: 0
+          example: 0
+        duration:
+          type: integer
+          minimum: 0
+        started:
+          type: boolean
+          example: true
+        pointWorth:
+          type: integer
+          minimum: 0
+          example: 10
+        includeForGrading:
+          type: boolean
+          example: true
+        participants:
+          type: integer
+          minimum: 0
+          example: 27
+    
+    QuizStudent:
+      properties:
+        question:
+          type: string
+          example: '1 + 1 = ?'
+        answerOptions:
+          type: array
+          items:
+            type: string
+          example: ['4', '2', '0']
+        correctAnswerIndex:
+          type: integer
+          minimum: 0
+          example: 0
+        studentAnswerIndex:
+          type: integer
+          minimum: -1
+          example: 2
+        pointWorth:
+          type: integer
+          minimum: 0
+          example: 10
+        includeForGrading:
+          type: boolean
+          example: true
+        
+    LoginResponse:
       properties:
         token:
           type: string
           example: '300b524e1b87374b56af68cd6b54aef7a65fda38'
+        userId:
+          type: string
+          example: '5db6093a7f75df3ce6c12095'
+        role:
+          type: string
+          example: 'faculty'
+        
           
 paths:
-  /courses:
-    get:
-      summary: Returns an array of courses
-      tags: 
-      - Course
-      security:
-       - BearerAuth: []
-      responses:
-        '200':
-          description: Get courses is successful
-          content:
-            application/json:
-              schema:
-                type: array             
-                items:
-                  $ref: '#/components/schemas/Course'
-        '500':
-          description: There was an error getting the courses
-    post:
-      summary: Create a new course
-      tags: 
-      - Course
-      security:
-      - BearerAuth: []
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-             type: object
-             required:
-              - courseName
-              - startTerm
-              - endTerm
-             properties:
-              courseName:
-                type: string
-                example: 'Calculus I'
-              courseDescription:
-                type: string
-                example: 'The basic of calculus (derivatives).'
-              startTerm:
-                type: string
-                example: 'August 2019'
-              endTerm:
-                type: string
-                example: 'December 2019'
-      responses:
-        '201':
-          description: Course was created successfully
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Course'
-        '500':
-          description: There was an error creating the course
-          
-  /courses/{courseId}:
-    parameters: 
-        - name: courseId
-          in: path
-          required: true
-          description: The id of the course
-          schema:
-            type: string
-            example: '5dbcb4a6051c1351ea5735ee'
-    get:
-      summary: Return a course specified by the courseId
-      tags: 
-      - Course
-      security:
-       - BearerAuth: []
-      responses:
-        '200':
-          description: Get course is successful
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Course'
-        '404':
-          description: Course is not in the user's course list
-        '500':
-          description: There was an error getting the course
-    put:
-      summary: Update a course specified by the courseId
-      tags: 
-      - Course
-      security:
-      - BearerAuth: []
-      requestBody:
-        description: Field(s) to be changed
-        required: true
-        content:
-          application/json:
-            schema:
-              type: object
-              properties:
-                courseName:
-                  type: string
-                  example: 'Calculus I'
-                courseDescription:
-                  type: string
-                  example: 'The basic of calculus (derivatives).'
-                startTerm:
-                  type: string
-                  example: 'August 2019'
-                endTerm:
-                  type: string
-                  example: 'December 2019'
-      responses:
-        '200':
-          description: Update course is successful
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Course'
-        '404':
-          description: Course not found
-        '500':
-          description: There was an error updating the course
-    delete:
-      summary: Delete a course specified by the courseId
-      tags: 
-      - Course
-      security:
-      - BearerAuth: []
-      responses:
-        '200':
-          description: Delete course is successful
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Course'
-        '404':
-          description: Course not found
-        '500':
-          description: There was an error deleting the course
-  
-  /courses/{joinCode}:
-    parameters: 
-      - name: joinCode
-        in: path
-        required: true
-        description: The joinCode of the course
-        schema:
-          type: string
-          example: '123654'
-      - name: joinCode
-        in: query
-        required: true
-        description: Flag to search by joinCode
-        schema:
-          type: boolean
-          example: true
-    get:
-      summary: Return a course specified by the joinCode
-      tags:
-      - Course
-      security: 
-      - BearerAuth: []
-      responses:
-        '200':
-          description: Get course is successful
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Course'
-        '404':
-          description: Course not found
-        '500':
-          description: There was an error getting the course
-        
-  /users/{userId}:
-    parameters:
-    - name: userId
-      in: path
-      required: true
-      description: The id of the user
-      schema:
-        type: string
-        example: '5db6093a7f75df3ce6c12095'
-    get:
-      summary: Return a user specified by the userId
-      tags:
-      - User
-      security: 
-      - BearerAuth: []
-      responses:
-        '200':
-          description: Get user is successful
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/User'
-        '404':
-          description: User not found
-        '500':
-          description: There was an error getting the user
-    put:
-      summary: Update a user specified by the userId
-      tags: 
-      - User
-      security:
-      - BearerAuth: []
-      requestBody:
-        description: Field(s) to be changed
-        content:
-          application/json:
-            schema:
-              type: object
-              properties:
-                firstName:
-                  type: string
-                  example: 'Wilson'
-                lastName:
-                  type: string
-                  example: 'Burnawan'
-                email:
-                  type: string
-                  format: email
-                  example: 'wilson.burnawan@gmail.com'
-                school:
-                  type: string
-                  example: 'University of Illinois at Urbana-Champaign'
-                oldPassword:
-                  type: string
-                  example: '123abc'
-                newPassword:
-                  type: string
-                  example: '123abc'
-      responses:
-        '200':
-          description: Update user is successful
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/User'
-        '404':
-          description: User not found
-        '500':
-          description: There was an error updating the user
-    delete:
-      summary: Delete a user specified by the userId
-      tags: 
-      - User
-      security:
-      - BearerAuth: []
-      responses:
-        '200':
-          description: Delete user is successful
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/User'
-        '404':
-          description: User not found
-        '500':
-          description: There was an error deleting the user
-                
   /signup:
     post:
       summary: Create a new user
@@ -384,7 +274,7 @@ paths:
                 example: '123abc'
       responses:
         '201':
-          description: User was created successfully
+          description: Create user is successful
         '500':
           description: There was an error creating the user
   
@@ -412,11 +302,11 @@ paths:
                   example: '123abc'
       responses:
         '200':
-          description: Login was successful
+          description: Login is successful
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Token'
+                $ref: '#/components/schemas/LoginResponse'
         '401':
           description: Please provide correct email and password
         '500':
@@ -436,7 +326,7 @@ paths:
       tags: 
       - Authentication
       responses:
-        '200':
+        '204':
           description: Account has been verified
         '401':
           description: Token is not valid
@@ -466,4 +356,903 @@ paths:
           description: Email has been sent
         '500':
           description: There was an error sending the email
+          
+  /users/{userId}:
+    parameters:
+    - name: userId
+      in: path
+      required: true
+      description: The id of the user
+      schema:
+        type: string
+        example: '5db6093a7f75df3ce6c12095'
+    get:
+      summary: Return a user specified by the userId
+      tags:
+      - User
+      security: 
+      - BearerAuth: []
+      responses:
+        '200':
+          description: Get user is successful
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+        '401':
+          description: Token is not valid
+        '404':
+          description: User not found
+        '500':
+          description: There was an error getting the user
+    put:
+      summary: Update a user specified by the userId
+      tags: 
+      - User
+      security:
+      - BearerAuth: []
+      requestBody:
+        description: Field(s) to be changed
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                firstName:
+                  type: string
+                  example: 'Wilson'
+                lastName:
+                  type: string
+                  example: 'Burnawan'
+                email:
+                  type: string
+                  format: email
+                  example: 'wilson.burnawan@gmail.com'
+                school:
+                  type: string
+                  example: 'University of Illinois at Urbana-Champaign'
+                oldPassword:
+                  type: string
+                  example: '123abc'
+                newPassword:
+                  type: string
+                  example: '123abc'
+      responses:
+        '200':
+          description: Update user is successful
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+        '401':
+          description: Token is not valid
+        '404':
+          description: User not found
+        '500':
+          description: There was an error updating the user
+    delete:
+      summary: Delete a user specified by the userId
+      tags: 
+      - User
+      security:
+      - BearerAuth: []
+      responses:
+        '200':
+          description: Delete user is successful
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+        '401':
+          description: Token is not valid
+        '404':
+          description: User not found
+        '500':
+          description: There was an error deleting the user
+          
+  /courses/{joinCode}:
+    parameters: 
+      - name: joinCode
+        in: path
+        required: true
+        description: The joinCode of the course
+        schema:
+          type: string
+          example: '123654'
+    get:
+      summary: Return a course specified by the joinCode
+      tags:
+      - Course
+      security: 
+      - BearerAuth: []
+      responses:
+        '200':
+          description: Get course is successful
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CourseStudent'
+        '404':
+          description: Course not found
+        '500':
+          description: There was an error getting the course
+
+  /faculty/courses:
+    get:
+      summary: Return an array of courses in the faculty's course list
+      tags: 
+      - Course Faculty
+      security:
+       - BearerAuth: []
+      responses:
+        '200':
+          description: Get faculty's courses is successful
+          content:
+            application/json:
+              schema:
+                type: array             
+                items:
+                  $ref: '#/components/schemas/CourseFaculty'
+        '401':
+          description: Only faculty is allowed to get faculty's courses
+        '500':
+          description: There was an error getting the faculty's courses
+    post:
+      summary: Create a new course
+      tags: 
+      - Course Faculty
+      security:
+      - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+             type: object
+             required:
+              - courseName
+              - startTerm
+              - endTerm
+             properties:
+              courseName:
+                type: string
+                example: 'Calculus I'
+              courseDescription:
+                type: string
+                example: 'The basic of calculus (derivatives).'
+              startTerm:
+                type: string
+                example: 'August 2019'
+              endTerm:
+                type: string
+                example: 'December 2019'
+      responses:
+        '201':
+          description: Create course is successful
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CourseFaculty'
+        '401': 
+          description: Only a faculty is allowed to create course
+        '500':
+          description: There was an error creating the course
+          
+  /student/courses:
+    get:
+      summary: Return an array of courses in the student's course list
+      tags: 
+      - Course Student
+      security:
+       - BearerAuth: []
+      responses:
+        '200':
+          description: Get student's courses is successful
+          content:
+            application/json:
+              schema:
+                type: array             
+                items:
+                  $ref: '#/components/schemas/CourseStudent'
+        '401':
+          description: Only student is allowed to get student's courses
+        '500':
+          description: There was an error getting the student's courses
+    post:
+      summary: Add a new course to the student's course list
+      tags: 
+      - Course Student
+      security:
+      - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+             type: object
+             required:
+              - joinCode
+             properties:
+              joinCode:
+                type: string
+                example: '123644'
+                minimum: 000000
+                maximum: 999999
+      responses:
+        '200':
+          description: Add course is successful
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CourseStudent'
+        '401': 
+          description: Only a student is allowed to add course
+        '404':
+          description: Course not found
+        '500':
+          description: There was an error adding the course to the student's course list
+    
+  /faculty/courses/{courseId}:
+    parameters: 
+        - name: courseId
+          in: path
+          required: true
+          description: The id of the course
+          schema:
+            type: string
+            example: '5dbcb4a6051c1351ea5735ee'
+    get:
+      summary: Return a course specified by the courseId in the faculty's course list
+      tags: 
+      - Course Faculty
+      security:
+       - BearerAuth: []
+      responses:
+        '200':
+          description: Get course is successful
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CourseFaculty'
+        '401':
+          description: Only faculty is allowed to get faculty's course
+        '404':
+          description: Course is not in the faculty's course list
+        '500':
+          description: There was an error getting the course
+    put:
+      summary: Update a course specified by the courseId in the faculty's course list
+      tags: 
+      - Course Faculty
+      security:
+      - BearerAuth: []
+      requestBody:
+        description: Field(s) to be changed
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                courseName:
+                  type: string
+                  example: 'Calculus I'
+                courseDescription:
+                  type: string
+                  example: 'The basic of calculus (derivatives).'
+                startTerm:
+                  type: string
+                  example: 'August 2019'
+                endTerm:
+                  type: string
+                  example: 'December 2019'
+      responses:
+        '200':
+          description: Update course is successful
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CourseFaculty'
+        '401':
+          description: The user is not one of the faculties in this course
+        '404':
+          description: Course is not in the faculty's course list
+        '500':
+          description: There was an error updating the course
+    delete:
+      summary: Delete a course specified by the courseId in the faculty's course list
+      tags: 
+      - Course Faculty
+      security:
+      - BearerAuth: []
+      responses:
+        '200':
+          description: Delete course is successful
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CourseFaculty'
+        '404':
+          description: Course is not in the faculty's course list
+        '401':
+          description: The user is not one of the faculties in this course
+        '500':
+          description: There was an error deleting the course
+          
+  /student/courses/{courseId}:
+    parameters: 
+      - name: courseId
+        in: path
+        required: true
+        description: The id of the course
+        schema:
+          type: string
+          example: '5dbcb4a6051c1351ea5735ee'
+    get:
+      summary: Return a course specified by the courseId in the student's course list
+      tags: 
+      - Course Student
+      security:
+       - BearerAuth: []
+      responses:
+        '200':
+          description: Get course is successful
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CourseStudent'
+        '401':
+          description: Only student is allowed to get student's course
+        '404':
+          description: Course is not in the student's course list
+        '500':
+          description: There was an error getting the course
+    delete:
+      summary: Remove a course specified by the courseId from the student's course list
+      tags: 
+      - Course Student
+      security:
+      - BearerAuth: []
+      responses:
+        '200':
+          description: Remove course is successful
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CourseStudent'
+        '404':
+          description: Course is not in the student's course list
+        '401':
+          description: Only a student is allowed to remove course
+        '500':
+          description: There was an error removing the course
+          
+  /faculty/courses/{courseId}/lectures:
+    parameters: 
+      - name: courseId
+        in: path
+        required: true
+        description: The id of the course
+        schema:
+          type: string
+          example: '5dbcb4a6051c1351ea5735ee'
+    get:
+      summary: Return an array of lectures in the faculty's specified course
+      tags: 
+      - Lecture Faculty
+      security:
+       - BearerAuth: []
+      responses:
+        '200':
+          description: Get faculty's lectures is successful
+          content:
+            application/json:
+              schema:
+                type: array             
+                items:
+                  $ref: '#/components/schemas/LectureFaculty'
+        '404':
+          description: Specified course was not found
+        '401':
+          description: Only faculty is allowed to get faculty's lectures
+        '500':
+          description: There was an error getting the faculty's lectures
+    post:
+      summary: Create a new lecture
+      tags: 
+      - Lecture Faculty
+      security:
+      - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+             type: object
+             required:
+              - date
+             properties:
+              date:
+                type: string
+                example: '23/07/2019'
+              lectureDescription:
+                type: string
+                example: 'Syllabus day'
+              participationRewardPercentage:
+                type: integer
+                minimum: 0
+                maximum: 100
+                example: 75
+      responses:
+        '201':
+          description: Create lecture is successful
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LectureFaculty'
+        '404':
+          description: Specified course was not found
+        '401': 
+          description: Only a faculty is allowed to create lecture
+        '500':
+          description: There was an error creating the lecture
+          
+  /student/courses/{courseId}/lectures:
+    parameters: 
+      - name: courseId
+        in: path
+        required: true
+        description: The id of the course
+        schema:
+          type: string
+          example: '5dbcb4a6051c1351ea5735ee'
+    get:
+      summary: Return an array of past lectures in the student's specified course
+      tags: 
+      - Lecture Student
+      security:
+       - BearerAuth: []
+      responses:
+        '200':
+          description: Get student's lectures is successful
+          content:
+            application/json:
+              schema:
+                type: array             
+                items:
+                  $ref: '#/components/schemas/LectureStudent'
+        '404':
+          description: Specified course was not found
+        '401':
+          description: Only student is allowed to get student's lectures
+        '500':
+          description: There was an error getting the student's lectures
+    post:
+      summary: Attend a lecture
+      tags: 
+      - Lecture Student
+      security:
+      - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+             type: object
+             required:
+              - lectureId
+             properties:
+              lectureId:
+                type: string
+                example: '5dbcb4a6051c1351ea5735ee'
+      responses:
+        '200':
+          description: Attend lecture is successful
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LectureStudent'
+        '404':
+          description: Lecture not found
+        '401': 
+          description: Only a student is allowed to attend lecture
+        '500':
+          description: There was an error attending the lecture
+          
+  /faculty/lectures/{lectureId}:
+    parameters: 
+      - name: lectureId
+        in: path
+        required: true
+        description: The id of the lecture
+        schema:
+          type: string
+          example: '5dbcb4a6051c1351ea5735ee'
+    get:
+      summary: Return a lecture specified by the lectureId that belongs to the faculty
+      tags: 
+      - Lecture Faculty
+      security:
+       - BearerAuth: []
+      responses:
+        '200':
+          description: Get lecture is successful
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LectureFaculty'
+        '404':
+          description: Specified lecture was not found
+        '401':
+          description: Only faculty is allowed to get faculty's lecture
+        '500':
+          description: There was an error getting the faculty's lecture
+    put:
+      summary: Update a lecture specified by the lectureId that belongs to the faculty
+      tags: 
+      - Lecture Faculty
+      security:
+      - BearerAuth: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+             type: object
+             properties:
+              date:
+                type: string
+                example: '23/07/2019'
+              lectureDescription:
+                type: string
+                example: 'Syllabus day'
+              participationRewardPercentage:
+                type: integer
+                minimum: 0
+                maximum: 100
+                example: 75
+      responses:
+        '200':
+          description: Update lecture is successful
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LectureFaculty'
+        '404':
+          description: Specified lecture was not found
+        '401': 
+          description: Only a faculty is allowed to update lecture
+        '500':
+          description: There was an error updating the lecture
+    delete:
+      summary: Remove a lecture specified by the lectureId that belongs to the faculty
+      tags: 
+      - Lecture Faculty
+      security:
+      - BearerAuth: []
+      responses:
+        '200':
+          description: Remove lecture is successful
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LectureFaculty'
+        '404':
+          description: Specified lecture was not found
+        '401':
+          description: The lecture does not belong to the faculty
+        '500':
+          description: There was an error deleting the lecture
+          
+  /student/lectures/{lectureId}:
+    parameters: 
+      - name: lectureId
+        in: path
+        required: true
+        description: The id of the lecture
+        schema:
+          type: string
+          example: '5dbcb4a6051c1351ea5735ee'
+    get:
+      summary: Return a lecture specified by the lectureId that is in the user's course
+      tags: 
+      - Lecture Student
+      security:
+       - BearerAuth: []
+      responses:
+        '200':
+          description: Get lecture is successful
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LectureStudent'
+        '404':
+          description: Specified lecture was not found
+        '401':
+          description: Only student is allowed to get student's lecture
+        '500':
+          description: There was an error getting the lecture
+          
+  /faculty/lectures/{lectureId}/quizzes:
+    parameters: 
+      - name: lectureId
+        in: path
+        required: true
+        description: The id of the lecture
+        schema:
+          type: string
+          example: '5dbcb4a6051c1351ea5735ee'
+    get:
+      summary: Return an array of quizzes in the faculty's specified lecture
+      tags: 
+      - Quiz Faculty
+      security:
+       - BearerAuth: []
+      responses:
+        '200':
+          description: Get faculty's quizzes is successful
+          content:
+            application/json:
+              schema:
+                type: array             
+                items:
+                  $ref: '#/components/schemas/QuizFaculty'
+        '404':
+          description: Specified lecture was not found
+        '401':
+          description: Only faculty is allowed to get faculty's quizzes
+        '500':
+          description: There was an error getting the faculty's quizzes
+    post:
+      summary: Create a new quiz
+      tags: 
+      - Quiz Faculty
+      security:
+      - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+             type: object
+             required:
+              - date
+             properties:
+              question:
+                type: string
+                example: '1 + 1 = ?'
+              answerOptions:
+                type: array
+                items:
+                  type: string
+                example: ['4', '2', '0']
+              correctAnswerIndex:
+                type: integer
+                minimum: 0
+                example: 0
+              duration:
+                type: integer
+                minimum: 0
+              pointWorth:
+                type: integer
+                minimum: 0
+                example: 10
+      responses:
+        '201':
+          description: Create quiz is successful
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/QuizFaculty'
+        '404':
+          description: Specified lecture was not found
+        '401': 
+          description: Only a faculty is allowed to create quiz
+        '500':
+          description: There was an error creating the quiz
+          
+  /student/lectures/{lectureId}/quizzes:
+    parameters: 
+      - name: lectureId
+        in: path
+        required: true
+        description: The id of the lecture
+        schema:
+          type: string
+          example: '5dbcb4a6051c1351ea5735ee'
+    get:
+      summary: Return an array of student's quizzes answers in the specified lecture
+      tags: 
+      - Quiz Student
+      security:
+       - BearerAuth: []
+      responses:
+        '200':
+          description: Get student's quizzes answers is successful
+          content:
+            application/json:
+              schema:
+                type: array             
+                items:
+                  $ref: '#/components/schemas/QuizStudent'
+        '404':
+          description: Specified lecture was not found
+        '401':
+          description: Only student is allowed to get student's quizzes answers
+        '500':
+          description: There was an error getting the student's quizzes answers
+    post:
+      summary: Answer a quiz
+      tags: 
+      - Quiz Student
+      security:
+      - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+             type: object
+             required:
+              - quizIndex
+             properties:
+              quizIndex:
+                type: integer
+                minimum: 0
+                example: 2
+      responses:
+        '200':
+          description: Answer is successful
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/QuizStudent'
+        '404':
+          description: Specified lecture was not found
+        '401': 
+          description: Only a student is allowed to answer quiz
+        '500':
+          description: There was an error answering the quiz
+          
+  /faculty/lectures/{lectureId}/quizzes/{quizIndex}:
+    parameters: 
+      - name: lectureId
+        in: path
+        required: true
+        description: The id of the lecture
+        schema:
+          type: string
+          example: '5dbcb4a6051c1351ea5735ee'
+      - name: quizIndex
+        in: path
+        required: true
+        description: The index of the quiz
+        schema:
+          type: integer
+          example: 0
+          minimum: 0
+    get:
+      summary: Return a quiz specified by the lectureId & quizIndex that belongs to the faculty
+      tags: 
+      - Quiz Faculty
+      security:
+       - BearerAuth: []
+      responses:
+        '200':
+          description: Get quiz is successful
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/QuizFaculty'
+        '404':
+          description: Specified quiz was not found
+        '401':
+          description: Only faculty is allowed to get faculty's quiz
+        '500':
+          description: There was an error getting the faculty's quiz
+    put:
+      summary: Update a quiz specified by the lectureId & quizIndex that belongs to the faculty
+      tags: 
+      - Quiz Faculty
+      security:
+      - BearerAuth: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+             type: object
+             properties:
+              question:
+                type: string
+                example: '1 + 1 = ?'
+              answerOptions:
+                type: array
+                items:
+                  type: string
+                example: ['4', '2', '0']
+              correctAnswerIndex:
+                type: integer
+                minimum: 0
+                example: 0
+              duration:
+                type: integer
+                minimum: 0
+              pointWorth:
+                type: integer
+                minimum: 0
+                example: 10
+              includeForGrading:
+                type: boolean
+                example: false
+              move:
+                type: string
+                enum: ['up', 'down']
+      responses:
+        '200':
+          description: Update quiz is successful
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/QuizFaculty'
+        '404':
+          description: Specified quiz was not found
+        '401': 
+          description: Only a faculty is allowed to update quiz
+        '500':
+          description: There was an error updating the quiz
+    delete:
+      summary: Remove a quiz specified by the lectureId & quizIndex that belongs to the faculty
+      tags: 
+      - Quiz Faculty
+      security:
+      - BearerAuth: []
+      responses:
+        '200':
+          description: Remove quiz is successful
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/QuizFaculty'
+        '404':
+          description: Specified quiz was not found
+        '401':
+          description: The quiz does not belong to the faculty
+        '500':
+          description: There was an error deleting the quiz
+          
+  /student/lectures/{lectureId}/quizzes/{quizIndex}:
+    parameters: 
+      - name: lectureId
+        in: path
+        required: true
+        description: The id of the lecture
+        schema:
+          type: string
+          example: '5dbcb4a6051c1351ea5735ee'
+      - name: quizIndex
+        in: path
+        required: true
+        description: The index of the quiz
+        schema:
+          type: integer
+          example: 0
+          minimum: 0
+    get:
+      summary: Return a student's quiz answer specified by lectureId & quizIndex
+      tags: 
+      - Quiz Student
+      security:
+       - BearerAuth: []
+      responses:
+        '200':
+          description: Get student quiz answer is successful
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/QuizStudent'
+        '404':
+          description: Specified quiz was not found
+        '401':
+          description: Only student is allowed to get student's quiz answer
+        '500':
+          description: There was an error getting the student's quiz answer
       
