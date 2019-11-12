@@ -335,7 +335,7 @@ paths:
           
   /resendToken:
     post:
-      summary: resend token to provided email
+      summary: Resend token to provided email
       requestBody:
         required: true
         content:
