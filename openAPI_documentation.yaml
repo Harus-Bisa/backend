@@ -115,8 +115,9 @@ components:
           type: string
           example: '5db6093a7f75df3ce6c12095'
         date:
-          type: string
-          example: '15/02/2019'
+          type: integer
+          example: 1376418899782
+          description: 'milliseconds since 1 January, 1970, 00:00:00, UTC'
         description:
           type: string
           example: 'Syllabus day'
@@ -145,8 +146,9 @@ components:
           type: string
           example: '5db6093a7f75df3ce6c12095'
         date:
-          type: string
-          example: '15/02/2019'
+          type: integer
+          example: 1376418899782
+          description: 'milliseconds since 1 January, 1970, 00:00:00, UTC'
         description:
           type: string
           example: 'Syllabus day'
@@ -273,9 +275,6 @@ paths:
                 type: string
                 example: 'faculty'
               password:
-                type: string
-                example: '123abc'
-              retypePassword:
                 type: string
                 example: '123abc'
       responses:
@@ -779,8 +778,9 @@ paths:
               - date
              properties:
               date:
-                type: string
-                example: '23/07/2019'
+                type: integer
+                example: 1376418899782
+                description: 'milliseconds since 1 January, 1970, 00:00:00, UTC'
               lectureDescription:
                 type: string
                 example: 'Syllabus day'
@@ -875,8 +875,9 @@ paths:
              type: object
              properties:
               date:
-                type: string
-                example: '23/07/2019'
+                type: integer
+                example: 1376418899782
+                description: 'milliseconds since 1 January, 1970, 00:00:00, UTC'
               lectureDescription:
                 type: string
                 example: 'Syllabus day'
@@ -1249,4 +1250,3 @@ paths:
           description: Only a student is allowed to answer quiz
         '500':
           description: There was an error answering the quiz
-      
