@@ -108,6 +108,9 @@ components:
           
     LectureFaculty:
       properties:
+        courseId:
+          type: string
+          example: '5db492c349a67b33b8d0a2a2'
         lectureId:
           type: string
           example: '5db6093a7f75df3ce6c12095'
@@ -135,6 +138,9 @@ components:
           
     LectureStudent:
       properties:
+        courseId:
+          type: string
+          example: '5db492c349a67b33b8d0a2a2'
         lectureId:
           type: string
           example: '5db6093a7f75df3ce6c12095'
@@ -827,37 +833,6 @@ paths:
           description: Only student is allowed to get student's lectures
         '500':
           description: There was an error getting the student's lectures
-    post:
-      summary: Attend a lecture
-      tags: 
-      - Lecture Student
-      security:
-      - BearerAuth: []
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-             type: object
-             required:
-              - lectureId
-             properties:
-              lectureId:
-                type: string
-                example: '5dbcb4a6051c1351ea5735ee'
-      responses:
-        '200':
-          description: Attend lecture is successful
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/LectureStudent'
-        '404':
-          description: Lecture not found
-        '401': 
-          description: Only a student is allowed to attend lecture
-        '500':
-          description: There was an error attending the lecture
           
   /faculty/lectures/{lectureId}:
     parameters: 
@@ -971,6 +946,25 @@ paths:
           description: Only student is allowed to get student's lecture
         '500':
           description: There was an error getting the lecture
+    post:
+      summary: Attend a lecture specified by the lectureId that is in the user's course
+      tags: 
+      - Lecture Student
+      security:
+      - BearerAuth: []
+      responses:
+        '200':
+          description: Attend lecture is successful
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LectureStudent'
+        '404':
+          description: Lecture not found
+        '401': 
+          description: Only a student is allowed to attend lecture
+        '500':
+          description: There was an error attending the lecture
           
   /faculty/lectures/{lectureId}/quizzes:
     parameters: 
@@ -1080,38 +1074,6 @@ paths:
           description: Only student is allowed to get student's quizzes answers
         '500':
           description: There was an error getting the student's quizzes answers
-    post:
-      summary: Answer a quiz
-      tags: 
-      - Quiz Student
-      security:
-      - BearerAuth: []
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-             type: object
-             required:
-              - quizIndex
-             properties:
-              quizIndex:
-                type: integer
-                minimum: 0
-                example: 2
-      responses:
-        '200':
-          description: Answer is successful
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/QuizStudent'
-        '404':
-          description: Specified lecture was not found
-        '401': 
-          description: Only a student is allowed to answer quiz
-        '500':
-          description: There was an error answering the quiz
           
   /faculty/lectures/{lectureId}/quizzes/{quizIndex}:
     parameters: 
@@ -1237,7 +1199,7 @@ paths:
           example: 0
           minimum: 0
     get:
-      summary: Return a student's quiz answer specified by lectureId & quizIndex
+      summary: Return a student's quiz answer specified by the lectureId & quizIndex
       tags: 
       - Quiz Student
       security:
@@ -1255,4 +1217,36 @@ paths:
           description: Only student is allowed to get student's quiz answer
         '500':
           description: There was an error getting the student's quiz answer
+    put:
+      summary: Answer a quiz specified by the lectureId & quizIndex
+      tags: 
+      - Quiz Student
+      security:
+      - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+             type: object
+             required:
+              - studentAnswerIndex
+             properties:
+              studentAnswerIndex:
+                type: integer
+                minimum: 0
+                example: 2
+      responses:
+        '200':
+          description: Answer is successful
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/QuizStudent'
+        '404':
+          description: Specified lecture was not found
+        '401': 
+          description: Only a student is allowed to answer quiz
+        '500':
+          description: There was an error answering the quiz
       
