@@ -37,7 +37,7 @@ router.post('/login', async (req, res, next) => {
         res.statusMessage = missingField + ' is not provided';
         return res.status(500).send();
     } else if (!authorized) {
-        res.statusMessagemessage = 'Please provide correct email and password';
+        res.statusMessage = 'Please provide correct email and password';
         return res.status(401).send();
     } else {
         res.statusMessage = 'Login is successful';
