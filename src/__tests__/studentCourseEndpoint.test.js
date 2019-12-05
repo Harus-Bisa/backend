@@ -73,6 +73,9 @@ describe('Auth endpoints', () => {
     let facultyToken;
     let courseId;
     let joinCode;
+    let numberOfUserCourse = 0;
+    let studentToken;
+    let studentUserId;
     it('faculty signup should be successful', async (done) => {
         const res = await request(app)
         .post('/signup')
@@ -163,6 +166,7 @@ describe('Auth endpoints', () => {
         });
         expect(res.statusCode).toEqual(200);
         checkCourseResponse(res, courseInfo, facultyInfo);
+        numberOfUserCourse += 1;
         done();
     });
 
@@ -223,7 +227,7 @@ describe('Auth endpoints', () => {
         .get('/student/courses/')
         .set('Authorization', 'Bearer ' + studentToken);
         expect(res.statusCode).toBe(200);
-        expect(res.body).toHaveLength(1);
+        expect(res.body).toHaveLength(numberOfUserCourse);
         res.body.forEach(course => {
             expect(course).not.toBeNull();
         });
@@ -249,6 +253,7 @@ describe('Auth endpoints', () => {
         expect(res.statusCode).toBe(200);
         expect(res.body.courseId).toBe(courseId);
         
+        numberOfUserCourse -= 1;
         done();
     });
 
@@ -266,7 +271,7 @@ describe('Auth endpoints', () => {
         .get('/student/courses/')
         .set('Authorization', 'Bearer ' + studentToken);
         expect(res.statusCode).toBe(200);
-        expect(res.body).toHaveLength(0);
+        expect(res.body).toHaveLength(numberOfUserCourse);
         res.body.forEach(course => {
             expect(course).not.toBeNull();
         });

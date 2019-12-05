@@ -35,6 +35,15 @@ const userInfo = {
     school: 'UIUC'
 };
 
+const studentInfo = {
+    email: randomstring.generate(),
+    password: 'wilsonburnawan',
+    firstName: 'Wilson',
+    lastName: 'Wilson',
+    role: 'student',
+    school: 'UIUC'
+};
+
 const courseInfo = {
     courseName: 'foo',
     startTerm: 'January 2019',
@@ -72,10 +81,22 @@ describe('Auth endpoints', () => {
     let userId;
     let courseId;
     let secondCourseId;
+    let numberOfFacultyCourse = 0;
+    let numberOfStudentCourse = 0;
+    let studentToken;
+    let studentUserId;
     it('signup should be successful', async (done) => {
         const res = await request(app)
         .post('/signup')
         .send(userInfo);
+        expect(res.statusCode).toEqual(201);
+        done();
+    });
+
+    it('student signup should be successful', async (done) => {
+        const res = await request(app)
+        .post('/signup')
+        .send(studentInfo);
         expect(res.statusCode).toEqual(201);
         done();
     });
@@ -91,6 +112,20 @@ describe('Auth endpoints', () => {
 
         token = res.body.token;
         userId = res.body.userId;
+        done();
+    });
+
+    it('student login should be successful', async (done) => {
+        const res = await request(app)
+        .post('/login')
+        .send({
+            email: studentInfo.email,
+            password: studentInfo.password,
+        });
+        expect(res.statusCode).toEqual(200);
+
+        studentToken = res.body.token;
+        studentUserId = res.body.userId;
         done();
     });
 
@@ -129,6 +164,8 @@ describe('Auth endpoints', () => {
         checkCourseResponse(res, courseInfo, userInfo);
 
         courseId = res.body.courseId;
+        joinCode = res.body.joinCode;
+        numberOfFacultyCourse += 1;
         done();
     });
 
@@ -179,6 +216,7 @@ describe('Auth endpoints', () => {
         expect(res.body.courseId).toBeDefined();
 
         secondCourseId = res.body.courseId;
+        numberOfFacultyCourse += 1;
         done();
     });
 
@@ -194,7 +232,7 @@ describe('Auth endpoints', () => {
         .get('/faculty/courses/')
         .set('Authorization', 'Bearer ' + token);
         expect(res.statusCode).toBe(200);
-        expect(res.body).toHaveLength(2);
+        expect(res.body).toHaveLength(numberOfFacultyCourse);
         res.body.forEach(course => {
             expect(course).not.toBeNull();
         });
@@ -241,6 +279,30 @@ describe('Auth endpoints', () => {
         done();
     });
 
+    it('student add course should succeed', async (done) => {
+        const res = await request(app)
+        .post('/student/courses/')
+        .set('Authorization', 'Bearer ' + studentToken)
+        .send({
+            joinCode: joinCode
+        });
+        expect(res.statusCode).toEqual(200);
+        numberOfStudentCourse += 1;
+        done();
+    });
+
+    it("student's courses should increase", async (done) => {
+        const res = await request(app)
+        .get('/student/courses/')
+        .set('Authorization', 'Bearer ' + studentToken);
+        expect(res.statusCode).toBe(200);
+        expect(res.body).toHaveLength(numberOfStudentCourse);
+        res.body.forEach(course => {
+            expect(course).not.toBeNull();
+        });
+        done();
+    });
+
     it("delete course should succeed", async (done) => {
         const res = await request(app)
         .delete('/faculty/courses/' + courseId)
@@ -248,6 +310,8 @@ describe('Auth endpoints', () => {
         expect(res.statusCode).toBe(200);
         expect(res.body.courseId).toBe(courseId);
         
+        numberOfFacultyCourse -= 1;
+        numberOfStudentCourse -= 1;
         done();
     });
 
@@ -264,7 +328,19 @@ describe('Auth endpoints', () => {
         .get('/faculty/courses/')
         .set('Authorization', 'Bearer ' + token);
         expect(res.statusCode).toBe(200);
-        expect(res.body).toHaveLength(1);
+        expect(res.body).toHaveLength(numberOfFacultyCourse);
+        res.body.forEach(course => {
+            expect(course).not.toBeNull();
+        });
+        done();
+    });
+
+    it("student's courses should decrease", async (done) => {
+        const res = await request(app)
+        .get('/student/courses/')
+        .set('Authorization', 'Bearer ' + studentToken);
+        expect(res.statusCode).toBe(200);
+        expect(res.body).toHaveLength(numberOfStudentCourse);
         res.body.forEach(course => {
             expect(course).not.toBeNull();
         });

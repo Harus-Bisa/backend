@@ -5,6 +5,7 @@ const UserService = require('../services/User.service');
 
 const userService = new UserService;
 
+
 class FacultyCourseService {
     /*
     Service to handle faculty course
@@ -90,6 +91,9 @@ class FacultyCourseService {
         userService.removeCourse(userId, courseId);
         let course = await Course.findByIdAndDelete(courseId);
         if (course) {
+            course.studentsId.forEach(studentId => {
+                userService.removeCourse(studentId, courseId);
+            });
             course = course.toFaculty();
         }
 

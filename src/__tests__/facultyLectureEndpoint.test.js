@@ -77,6 +77,7 @@ describe('Auth endpoints', () => {
     let courseId;
     let lectureId;
     let secondLectureId;
+    let numberOfLectureInCourse = 0;
     it('signup should be successful', async (done) => {
         const res = await request(app)
         .post('/signup')
@@ -151,6 +152,7 @@ describe('Auth endpoints', () => {
         checkLectureResponse(res, courseId);
 
         lectureId = res.body.lectureId;
+        numberOfLectureInCourse += 1;
         done();
     });
 
@@ -165,6 +167,7 @@ describe('Auth endpoints', () => {
         });
         expect(res.statusCode).toEqual(201);
         secondLectureId = res.body.lectureId;
+        numberOfLectureInCourse += 1;
         done();
     });
 
@@ -204,7 +207,7 @@ describe('Auth endpoints', () => {
         .get('/faculty/courses/' + courseId + '/lectures/')
         .set('Authorization', 'Bearer ' + token);
         expect(res.statusCode).toBe(200);
-        expect(res.body).toHaveLength(2);
+        expect(res.body).toHaveLength(numberOfLectureInCourse);
         res.body.forEach(lecture => {
             expect(lecture).not.toBeNull();
         });
@@ -308,6 +311,7 @@ describe('Auth endpoints', () => {
         .set('Authorization', 'Bearer ' + token);
         expect(res.statusCode).toBe(200);
         expect(res.body.lectureId).toBe(lectureId);
+        numberOfLectureInCourse -= 1;
         
         done();
     });
@@ -334,7 +338,7 @@ describe('Auth endpoints', () => {
         .get('/faculty/courses/' + courseId + '/lectures/')
         .set('Authorization', 'Bearer ' + token);
         expect(res.statusCode).toBe(200);
-        expect(res.body).toHaveLength(1);
+        expect(res.body).toHaveLength(numberOfLectureInCourse);
         res.body.forEach(lecture => {
             expect(lecture).not.toBeNull();
         });

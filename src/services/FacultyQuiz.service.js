@@ -11,8 +11,8 @@ class FacultyQuizService {
         let lecture;
         let newQuiz;
 
-        const requiredField = ['question', 'answerOptions', 'correctAnswerIndex', 'duration', 'pointWorth', 'includeForGrading'];
-        const allowedField = requiredField;
+        const requiredField = ['question', 'answerOptions', 'correctAnswerIndex', 'duration', 'pointWorth'];
+        const allowedField = ['question', 'answerOptions', 'correctAnswerIndex', 'duration', 'pointWorth', 'includeForGrading'];
         
         // check for every required field
         for (let field of requiredField) {
@@ -30,7 +30,9 @@ class FacultyQuizService {
         }
 
         if (missingField === undefined) {
-            quizInfo.includeForGrading = false;
+            if (quizInfo.includeForGrading === undefined) {
+                quizInfo.includeForGrading = true;
+            }
             quizInfo.started = false;
             quizInfo.participants = {};
 

@@ -56,7 +56,7 @@ const checkQuizResponse = (res) => {
     expect(res.body.duration).toBe(quizInfo.duration);
     expect(res.body.started).toBeDefined();
     expect(res.body.pointWorth).toBe(quizInfo.pointWorth);
-    expect(res.body.includeForGrading).toBe(quizInfo.includeForGrading);
+    expect(res.body.includeForGrading).toBeDefined();
     expect(res.body.participants).toBe(0);
     expect(res.body.random).not.toBeDefined();
 };
@@ -136,6 +136,7 @@ describe('Auth endpoints', () => {
         checkQuizResponse(res);
         const lecture = await Lecture.findById(lectureId);
         expect(lecture.quizzes.length).toBe(1);
+        expect(res.body.includeForGrading).toBe(quizInfo.includeForGrading);
         done();
     });
 
@@ -149,10 +150,10 @@ describe('Auth endpoints', () => {
             correctAnswerIndex: quizInfo.correctAnswerIndex,
             answerOptions: quizInfo.answerOptions,
             duration: quizInfo.duration,
-            includeForGrading: quizInfo.includeForGrading,
             random: 'foo'
         });
         expect(res.statusCode).toEqual(201);
+        expect(res.body.includeForGrading).toBe(true);
         const lecture = await Lecture.findById(lectureId);
         expect(lecture.quizzes.length).toBe(2);
         done();
